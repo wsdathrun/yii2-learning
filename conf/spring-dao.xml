@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd 
+       	http://www.springframework.org/schema/context 
+       	http://www.springframework.org/schema/context/spring-context-4.0.xsd
+       	http://www.springframework.org/schema/data/mongo
+       	http://www.springframework.org/schema/data/mongo/spring-mongo-1.10.2.xsd">
+
+	<context:annotation-config />
+	<context:component-scan base-package="cn.ispeak.dynamics.real" />
+
+	<context:property-placeholder location="file:conf/db.properties" />
+	
+	<!-- <mongo:mongo-client id="mongoClient" replica-set="${mongo.hostport}" credentials="${mongo.credentials}">
+		<mongo:client-options
+			connections-per-host="${mongo.connectionsPerHost}"
+			threads-allowed-to-block-for-connection-multiplier="${mongo.threadsAllowedToBlockForConnectionMultiplier}"
+			connect-timeout="${mongo.connectTimeout}"
+			max-wait-time="${mongo.maxWaitTime}"
+			socket-keep-alive="${mongo.socketKeepAlive}"
+			socket-timeout="${mongo.socketTimeout}"/>
+	</mongo:mongo-client> -->
+
+	<!-- <mongo:db-factory client-uri="mongodb://${mongo.username}:${mongo.password}@${mongo.hostport}/${mongo.dbName}?replicaSet=${mongo.replicaSet}"/> -->
+	<!-- <mongo:db-factory client-uri="mongodb://${mongo.username}:${mongo.password}@${mongo.hostport}/${mongo.dbName}?replicaSet=${mongo.replicaSet};socket-keep-alive=true"/> -->
+	<mongo:db-factory client-uri="mongodb://${mongo.username}:${mongo.password}@${mongo.hostport}/${mongo.dbName}?socket-keep-alive=true"/>
+
+	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
+	</bean>
+	
+	<!-- myzone mysql -->
+	<bean name="myzoneDataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="url" value="${myzone.url}" />
+        <property name="username" value="${myzone.username}" />
+        <property name="password" value="${myzone.password}" />
+        <property name="dbType" value = "${myzone.dbType}" />
+
+        <property name="initialSize" value="${myzone.initialSize}" />
+        <property name="maxActive" value="${myzone.maxActive}" />
+        <property name="minIdle" value="${myzone.minIdle}" />
+        <property name="maxWait" value="${myzone.maxWait}" />
+
+		<property name="validationQuery" value="${myzone.validationQuery}" />
+        <property name="testOnBorrow" value="true" />
+        <property name="testOnReturn" value="false" />
+        <property name="testWhileIdle" value="true" />
+    </bean>
+	
+	<bean id="myzoneJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="myzoneDataSource"/>
+	</bean>
+	
+	<!-- gift mysql -->
+	<bean name="giftDataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="url" value="${gift.url}" />
+        <property name="username" value="${gift.username}" />
+        <property name="password" value="${gift.password}" />
+        <property name="dbType" value = "${gift.dbType}" />
+
+        <property name="initialSize" value="${gift.initialSize}" />
+        <property name="maxActive" value="${gift.maxActive}" />
+        <property name="minIdle" value="${gift.minIdle}" />
+        <property name="maxWait" value="${gift.maxWait}" />
+
+		<property name="validationQuery" value="${gift.validationQuery}" />
+        <property name="testOnBorrow" value="true" />
+        <property name="testOnReturn" value="false" />
+        <property name="testWhileIdle" value="true" />
+    </bean>
+	
+	<bean id="giftJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="giftDataSource"/>
+	</bean>
+	
+	<!-- user mysql -->
+	<bean name="userDataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="url" value="${user.url}" />
+        <property name="username" value="${user.username}" />
+        <property name="password" value="${user.password}" />
+        <property name="dbType" value = "${user.dbType}" />
+
+        <property name="initialSize" value="${user.initialSize}" />
+        <property name="maxActive" value="${user.maxActive}" />
+        <property name="minIdle" value="${user.minIdle}" />
+        <property name="maxWait" value="${user.maxWait}" />
+
+		<property name="validationQuery" value="${user.validationQuery}" />
+        <property name="testOnBorrow" value="true" />
+        <property name="testOnReturn" value="false" />
+        <property name="testWhileIdle" value="true" />
+    </bean>
+	
+	<bean id="userJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="userDataSource"/>
+	</bean>
+</beans>
