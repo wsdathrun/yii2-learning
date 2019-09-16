@@ -14,6 +14,14 @@ class RunCest
         $I->seeInShellOutput("OK (");
     }
 
+    public function runOneFileWithColors(\CliGuy $I)
+    {
+        $I->wantTo('execute one test');
+        $I->executeCommand('run --colors tests/dummy/FileExistsCept.php');
+        $I->seeInShellOutput("OK (");
+        $I->seeInShellOutput("\033[35;1mFileExistsCept:\033[39;22m Check config exists");
+    }
+
     /**
      * @group reports
      * @group core
@@ -347,11 +355,18 @@ EOF
         $I->seeInShellOutput('PASSED');
     }
 
-    public function runIncompleteGherkinTest(CliGuy $I)
+    public function reportsCorrectFailedStep(CliGuy $I)
     {
         $I->executeCommand('run scenario File.feature -v');
         $I->seeInShellOutput('OK, but incomplete');
         $I->seeInShellOutput('Step definition for `I have only idea of what\'s going on here` not found in contexts');
+    }
+
+    public function runFailingGherkinTest(CliGuy $I)
+    {
+        $I->executeCommand('run scenario Fail.feature -v --no-exit');
+        $I->seeInShellOutput('Step  I see file "games.zip"');
+        $I->seeInShellOutput('Step  I see file "tools.zip"');
     }
 
     public function runGherkinScenarioWithMultipleStepDefinitions(CliGuy $I)
@@ -427,9 +442,9 @@ EOF
 
     public function overrideModuleOptions(CliGuy $I)
     {
-        $I->executeCommand('run powers --no-exit');
+        $I->executeCommand('run powers PowerIsRisingCept --no-exit');
         $I->seeInShellOutput('FAILURES');
-        $I->executeCommand('run powers -o "modules: config: PowerHelper: has_power: true" --no-exit');
+        $I->executeCommand('run powers PowerIsRisingCept -o "modules: config: PowerHelper: has_power: true" --no-exit');
         $I->dontSeeInShellOutput('FAILURES');
     }
 
@@ -453,5 +468,30 @@ EOF
     {
         $I->executeCommand('run scenario -g dataprovider --steps');
         $I->seeInShellOutput('OK (15 tests');
+    }
+
+    public function runFailedTestAndCheckOutput(CliGuy $I)
+    {
+        $I->executeCommand('run scenario FailedCept', false);
+        $testPath = implode(DIRECTORY_SEPARATOR, ['tests', 'scenario', 'FailedCept.php']);
+        $I->seeInShellOutput('1) FailedCept: Fail when file is not found');
+        $I->seeInShellOutput('Test  ' . $testPath);
+        $I->seeInShellOutput('Step  See file found "games.zip"');
+        $I->seeInShellOutput('Fail  File "games.zip" not found at ""');
+    }
+
+    public function runTestWithCustomSetupMethod(CliGuy $I)
+    {
+        $I->executeCommand('run powers PowerUpCest');
+        $I->dontSeeInShellOutput('FAILURES');
+    }
+    
+    public function runCestWithTwoFailedTest(CliGuy $I)
+    {
+        $I->executeCommand('run scenario PartialFailedCest', false);
+        $I->seeInShellOutput('See file found "testcasetwo.txt"');
+        $I->seeInShellOutput('See file found "testcasethree.txt"');
+        $I->seeInShellOutput('Tests: 3,');
+        $I->seeInShellOutput('Failures: 2.');
     }
 }

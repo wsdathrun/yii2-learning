@@ -11,13 +11,14 @@
 
 namespace Symfony\Component\EventDispatcher\Tests;
 
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\ImmutableEventDispatcher;
 
 /**
  * @author Bernhard Schussek <bschussek@gmail.com>
  */
-class ImmutableEventDispatcherTest extends \PHPUnit_Framework_TestCase
+class ImmutableEventDispatcherTest extends TestCase
 {
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
@@ -41,10 +42,10 @@ class ImmutableEventDispatcherTest extends \PHPUnit_Framework_TestCase
 
         $this->innerDispatcher->expects($this->once())
             ->method('dispatch')
-            ->with('event', $event)
-            ->will($this->returnValue('result'));
+            ->with($event, 'event')
+            ->willReturn('result');
 
-        $this->assertSame('result', $this->dispatcher->dispatch('event', $event));
+        $this->assertSame('result', $this->dispatcher->dispatch($event, 'event'));
     }
 
     public function testGetListenersDelegates()
@@ -52,7 +53,7 @@ class ImmutableEventDispatcherTest extends \PHPUnit_Framework_TestCase
         $this->innerDispatcher->expects($this->once())
             ->method('getListeners')
             ->with('event')
-            ->will($this->returnValue('result'));
+            ->willReturn('result');
 
         $this->assertSame('result', $this->dispatcher->getListeners('event'));
     }
@@ -62,7 +63,7 @@ class ImmutableEventDispatcherTest extends \PHPUnit_Framework_TestCase
         $this->innerDispatcher->expects($this->once())
             ->method('hasListeners')
             ->with('event')
-            ->will($this->returnValue('result'));
+            ->willReturn('result');
 
         $this->assertSame('result', $this->dispatcher->hasListeners('event'));
     }

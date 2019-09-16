@@ -21,11 +21,11 @@ Content Cell  | Content Cell
 | Help      | **Display the** help window.|
 | Close     | _Closes_ a window     |
 
-| Left-Aligned  | Center Aligned  | Right Aligned |
-| :------------ |:---------------:| -----:|
-| col 3 is      | some wordy text | $1600 |
-| col 2 is      | centered        |   $12 |
-| zebra stripes | are neat        |    $1 |
+| Default-Align | Left-Aligned  | Center Aligned  | Right Aligned |
+| ------------- | :------------ |:---------------:| -----:|
+| 1             | col 3 is      | some wordy text | $1600 |
+| 2             | col 2 is      | centered        |   $12 |
+| 3             | zebra stripes | are neat        |    $1 |
 
 
 Simple | Table
@@ -54,3 +54,77 @@ Escaped \\ | Pipe | Broken | Blank
 | :----- | ----- |
 | 3      | 4     |
 3      | 4
+5
+
+Mixed | Table
+------ | -----
+| 1      | 2
+3      | 4
+
+| Mixed | Table
+------ | -----
+| 1      | 2
+3      | 4
+
+ Mixed | Table
+|------ | ----- |
+ 1      | 2
+| 3      | 4 |
+
+some text
+
+| single col |
+| -- |  -- |
+| 1 |
+2
+3
+
+| Table | With | Empty | Cells |
+| ----- | ---- | ----- | ----- |
+|       |      |       |       |
+|   a   |      |   b   |       |
+|       |  a   |       |   b   |
+|   a   |      |       |   b   |
+|       |  a   |   b   |       |
+
+   |
+-- | --
+   |
+   
+|   |   |
+| - | - |
+|   |   |
+
+ | Table | Indentation |
+ | ----- | ---- |
+   | A     | B    |
+
+  | Table | Indentation |
+  | ----- | ---- |
+   | A     | B    |
+
+ | Table | Indentation |
+   | ----- | ---- |
+ | A     | B    |
+
+    | Table | Indentation |
+   | ----- | ---- |
+ | A     | B    |
+
+| Table | Indentation |
+    | :----- | ---- |
+    | A     | B    |
+
+| Item      | Value |
+| --------- | -----:|
+| Computer  | $1600 |
+| Phone     |   $12 |
+| Pipe      |    $1 |
+
+| a | b | c |
+|:-:|:-:|:-:|
+| 1 | 2 | 3 |
+
+| a | b | c | d |
+|:--|:-:|:--|:-:|
+| 1 | 2 | 3 | 4 |

@@ -79,7 +79,7 @@ trait LinkTrait
 			// remove all starting [ markers to avoid next one to be parsed as link
 			$result = '[';
 			$i = 1;
-			while (isset($markdown[$i]) && $markdown[$i] == '[') {
+			while (isset($markdown[$i]) && $markdown[$i] === '[') {
 				$result .= '[';
 				$i++;
 			}
@@ -111,7 +111,7 @@ trait LinkTrait
 			// remove all starting [ markers to avoid next one to be parsed as link
 			$result = '!';
 			$i = 1;
-			while (isset($markdown[$i]) && $markdown[$i] == '[') {
+			while (isset($markdown[$i]) && $markdown[$i] === '[') {
 				$result .= '[';
 				$i++;
 			}
@@ -169,7 +169,7 @@ REGEXP;
 	{
 		if (strpos($text, '>') !== false) {
 			if (!in_array('parseLink', $this->context)) { // do not allow links in links
-				if (preg_match('/^<([^\s]*?@[^\s]*?\.\w+?)>/', $text, $matches)) {
+				if (preg_match('/^<([^\s>]*?@[^\s]*?\.\w+?)>/', $text, $matches)) {
 					// email address
 					return [
 						['email', $this->replaceEscape($matches[1])],
@@ -200,7 +200,9 @@ REGEXP;
 	protected function renderUrl($block)
 	{
 		$url = htmlspecialchars($block[1], ENT_COMPAT | ENT_HTML401, 'UTF-8');
-		$text = htmlspecialchars(urldecode($block[1]), ENT_NOQUOTES | ENT_SUBSTITUTE, 'UTF-8');
+		$decodedUrl = urldecode($block[1]);
+		$secureUrlText = preg_match('//u', $decodedUrl) ? $decodedUrl : $block[1];
+		$text = htmlspecialchars($secureUrlText, ENT_NOQUOTES | ENT_SUBSTITUTE, 'UTF-8');
 		return "<a href=\"$url\">$text</a>";
 	}
 
@@ -219,6 +221,9 @@ REGEXP;
 			if (($ref = $this->lookupReference($block['refkey'])) !== false) {
 				$block = array_merge($block, $ref);
 			} else {
+				if (strncmp($block['orig'], '[', 1) === 0) {
+					return '[' . $this->renderAbsy($this->parseInline(substr($block['orig'], 1)));
+				}
 				return $block['orig'];
 			}
 		}
@@ -233,6 +238,9 @@ REGEXP;
 			if (($ref = $this->lookupReference($block['refkey'])) !== false) {
 				$block = array_merge($block, $ref);
 			} else {
+				if (strncmp($block['orig'], '![', 2) === 0) {
+					return '![' . $this->renderAbsy($this->parseInline(substr($block['orig'], 2)));
+				}
 				return $block['orig'];
 			}
 		}
@@ -246,7 +254,7 @@ REGEXP;
 
 	protected function identifyReference($line)
 	{
-		return ($line[0] === ' ' || $line[0] === '[') && preg_match('/^ {0,3}\[(.+?)\]:\s*([^\s]+?)(?:\s+[\'"](.+?)[\'"])?\s*$/', $line);
+		return isset($line[0]) && ($line[0] === ' ' || $line[0] === '[') && preg_match('/^ {0,3}\[[^\[](.*?)\]:\s*([^\s]+?)(?:\s+[\'"](.+?)[\'"])?\s*$/', $line);
 	}
 
 	/**
@@ -273,4 +281,7 @@ REGEXP;
 		}
 		return [false, --$current];
 	}
+
+	abstract protected function parseInline($text);
+	abstract protected function renderAbsy($blocks);
 }

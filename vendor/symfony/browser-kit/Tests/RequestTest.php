@@ -11,9 +11,10 @@
 
 namespace Symfony\Component\BrowserKit\Tests;
 
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\BrowserKit\Request;
 
-class RequestTest extends \PHPUnit_Framework_TestCase
+class RequestTest extends TestCase
 {
     public function testGetUri()
     {
@@ -29,25 +30,25 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
     public function testGetParameters()
     {
-        $request = new Request('http://www.example.com/', 'get', array('foo' => 'bar'));
-        $this->assertEquals(array('foo' => 'bar'), $request->getParameters(), '->getParameters() returns the parameters of the request');
+        $request = new Request('http://www.example.com/', 'get', ['foo' => 'bar']);
+        $this->assertEquals(['foo' => 'bar'], $request->getParameters(), '->getParameters() returns the parameters of the request');
     }
 
     public function testGetFiles()
     {
-        $request = new Request('http://www.example.com/', 'get', array(), array('foo' => 'bar'));
-        $this->assertEquals(array('foo' => 'bar'), $request->getFiles(), '->getFiles() returns the uploaded files of the request');
+        $request = new Request('http://www.example.com/', 'get', [], ['foo' => 'bar']);
+        $this->assertEquals(['foo' => 'bar'], $request->getFiles(), '->getFiles() returns the uploaded files of the request');
     }
 
     public function testGetCookies()
     {
-        $request = new Request('http://www.example.com/', 'get', array(), array(), array('foo' => 'bar'));
-        $this->assertEquals(array('foo' => 'bar'), $request->getCookies(), '->getCookies() returns the cookies of the request');
+        $request = new Request('http://www.example.com/', 'get', [], [], ['foo' => 'bar']);
+        $this->assertEquals(['foo' => 'bar'], $request->getCookies(), '->getCookies() returns the cookies of the request');
     }
 
     public function testGetServer()
     {
-        $request = new Request('http://www.example.com/', 'get', array(), array(), array(), array('foo' => 'bar'));
-        $this->assertEquals(array('foo' => 'bar'), $request->getServer(), '->getServer() returns the server parameters of the request');
+        $request = new Request('http://www.example.com/', 'get', [], [], [], ['foo' => 'bar']);
+        $this->assertEquals(['foo' => 'bar'], $request->getServer(), '->getServer() returns the server parameters of the request');
     }
 }

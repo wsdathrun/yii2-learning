@@ -81,7 +81,7 @@ trait ListTrait
 		for ($i = $current, $count = count($lines); $i < $count; $i++) {
 			$line = $lines[$i];
 			// match list marker on the beginning of the line
-			$pattern = ($type == 'ol') ? '/^( {0,'.$leadSpace.'})(\d+)\.[ \t]+/' : '/^( {0,'.$leadSpace.'})\\'.$marker.'[ \t]+/';
+			$pattern = ($type === 'ol') ? '/^( {0,'.$leadSpace.'})(\d+)\.[ \t]+/' : '/^( {0,'.$leadSpace.'})\\'.$marker.'[ \t]+/';
 			if (preg_match($pattern, $line, $matches)) {
 				if (($len = substr_count($matches[0], "\t")) > 0) {
 					$indent = str_repeat("\t", $len);
@@ -95,7 +95,7 @@ trait ListTrait
 					$leadSpace = strlen($matches[1]) + 1;
 				}
 
-				if ($type == 'ol' && $this->keepListStartNumber) {
+				if ($type === 'ol' && $this->keepListStartNumber) {
 					// attr `start` for ol
 					if (!isset($block['attr']['start']) && isset($matches[2])) {
 						$block['attr']['start'] = $matches[2];
@@ -122,7 +122,7 @@ trait ListTrait
 				} elseif (strncmp($lines[$i + 1], $indent, $len) === 0 || !empty($lines[$i + 1]) && $lines[$i + 1][0] == "\t") {
 					$block['items'][$item][] = $line;
 					$nextLine = $lines[$i + 1][0] === "\t" ? substr($lines[$i + 1], 1) : substr($lines[$i + 1], $len);
-					$block['lazyItems'][$item] = !method_exists($this, 'identifyReference') || !$this->identifyReference($nextLine);
+					$block['lazyItems'][$item] = empty($nextLine) || !method_exists($this, 'identifyReference') || !$this->identifyReference($nextLine);
 
 				// everything else ends the list
 				} else {
@@ -136,6 +136,11 @@ trait ListTrait
 				}
 				$block['items'][$item][] = $line;
 				$lastLineEmpty = false;
+			}
+
+			// if next line is <hr>, end the list
+			if (!empty($lines[$i + 1]) && method_exists($this, 'identifyHr') && $this->identifyHr($lines[$i + 1])) {
+				break;
 			}
 		}
 
